@@ -30,6 +30,7 @@ class LoginLogService:
         device_type: Optional[str] = None,
         session_id: Optional[str] = None,
         remark: Optional[str] = None,
+        login_type: str = 'password',
     ) -> LoginLog:
         """
         记录登录日志
@@ -48,6 +49,7 @@ class LoginLogService:
             device_type: 设备类型
             session_id: 会话ID
             remark: 备注
+            login_type: 登录方式
         
         Returns:
             LoginLog: 创建的登录日志对象
@@ -66,6 +68,7 @@ class LoginLogService:
             device_type=device_type,
             session_id=session_id,
             remark=remark,
+            login_type=login_type,
         )
         login_log.save()
         return login_log
@@ -82,6 +85,7 @@ class LoginLogService:
         device_type: Optional[str] = None,
         session_id: Optional[str] = None,
         remark: Optional[str] = None,
+        login_type: str = 'password',
     ) -> LoginLog:
         """
         记录成功登录
@@ -97,6 +101,7 @@ class LoginLogService:
             device_type: 设备类型
             session_id: 会话ID
             remark: 备注
+            login_type: 登录方式
         
         Returns:
             LoginLog: 创建的登录日志对象
@@ -113,6 +118,7 @@ class LoginLogService:
             device_type=device_type,
             session_id=session_id,
             remark=remark,
+            login_type=login_type,
         )
     
     @staticmethod

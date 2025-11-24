@@ -62,3 +62,5 @@ coverage
 
 ./windsurf/rules
 /.windsurf/rules/web.md
+/docs/
+*/*.md/

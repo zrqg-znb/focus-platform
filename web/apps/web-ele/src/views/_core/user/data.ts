@@ -40,6 +40,23 @@ export function getUserTypeOptions() {
 }
 
 /**
+ * 获取登录方式选项
+ */
+export function getLoginTypeOptions() {
+  return [
+    { label: '密码登录', value: 'password', type: 'info' },
+    { label: '验证码登录', value: 'code', type: 'info' },
+    { label: '二维码登录', value: 'qrcode', type: 'info' },
+    { label: 'Gitee', value: 'gitee', type: 'success' },
+    { label: 'GitHub', value: 'github', type: 'success' },
+    { label: 'QQ', value: 'qq', type: 'success' },
+    { label: 'Google', value: 'google', type: 'success' },
+    { label: '微信', value: 'wechat', type: 'success' },
+    { label: '微软', value: 'microsoft', type: 'success' },
+  ];
+}
+
+/**
  * 获取搜索表单的字段配置
  */
 export function useSearchFormSchema(): VbenFormSchema[] {
@@ -53,6 +70,16 @@ export function useSearchFormSchema(): VbenFormSchema[] {
       component: 'Input',
       fieldName: 'username',
       label: $t('user.account'),
+    },
+    {
+      component: 'Select',
+      fieldName: 'last_login_type',
+      label: '最后登录方式',
+      componentProps: {
+        placeholder: '请选择登录方式',
+        options: getLoginTypeOptions(),
+        clearable: true,
+      },
     },
   ];
 }
@@ -306,6 +333,20 @@ export function useColumns(
       field: 'user_status',
       title: $t('user.status'),
       minWidth: 100,
+    },
+    {
+      field: 'last_login_type',
+      title: '最后登录方式',
+      minWidth: 120,
+      cellRender: {
+        name: 'CellTag',
+        options: getLoginTypeOptions(),
+      },
+    },
+    {
+      field: 'last_login',
+      title: '最后登录时间',
+      minWidth: 180,
     },
     {
       field: 'sys_create_datetime',

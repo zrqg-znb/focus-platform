@@ -40,6 +40,19 @@ class LoginLog(RootModel):
         (7, '其他错误'),
     ]
     
+    # 登录方式选择
+    LOGIN_TYPE_CHOICES = [
+        ('password', '密码登录'),
+        ('code', '验证码登录'),
+        ('qrcode', '二维码登录'),
+        ('gitee', 'Gitee OAuth'),
+        ('github', 'GitHub OAuth'),
+        ('qq', 'QQ OAuth'),
+        ('google', 'Google OAuth'),
+        ('wechat', '微信 OAuth'),
+        ('microsoft', '微软 OAuth'),
+    ]
+    
     # 用户ID
     user_id = models.CharField(
         max_length=36,
@@ -53,6 +66,15 @@ class LoginLog(RootModel):
     username = models.CharField(
         max_length=150,
         help_text="用户名",
+        db_index=True,
+    )
+    
+    # 登录方式
+    login_type = models.CharField(
+        max_length=20,
+        choices=LOGIN_TYPE_CHOICES,
+        default='password',
+        help_text="登录方式",
         db_index=True,
     )
     
@@ -160,6 +182,8 @@ class LoginLog(RootModel):
             models.Index(fields=['username', 'status']),
             models.Index(fields=['status', 'sys_create_datetime']),
             models.Index(fields=['login_ip', 'sys_create_datetime']),
+            models.Index(fields=['login_type', 'sys_create_datetime']),
+            models.Index(fields=['user_id', 'login_type']),
         ]
     
     def __str__(self):
@@ -185,4 +209,9 @@ class LoginLog(RootModel):
     def is_failed(self):
         """判断登录是否失败"""
         return self.status == 0
+    
+    def get_login_type_display_name(self):
+        """获取登录方式的显示名称"""
+        type_map = dict(self.LOGIN_TYPE_CHOICES)
+        return type_map.get(self.login_type, '未知方式')
 

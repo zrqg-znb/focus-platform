@@ -252,6 +252,15 @@ class User(RootModel):
         db_index=True,
     )
     
+    # 最后登录方式
+    last_login_type = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        help_text="最后登录方式 (password/code/qrcode/gitee/github/qq/google/wechat/microsoft)",
+        db_index=True,
+    )
+    
     # 关联的岗位
     post = models.ManyToManyField(
         to="core.Post",

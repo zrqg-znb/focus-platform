@@ -179,7 +179,8 @@ class BaseOAuthService(ABC):
         cls,
         code: str,
         ip_address: str,
-        user_agent: str = None
+        user_agent: str = None,
+        login_type: str = None
     ) -> Tuple[User, str, str, int]:
         """
         处理 OAuth 登录流程
@@ -188,6 +189,7 @@ class BaseOAuthService(ABC):
             code: 授权码
             ip_address: 用户 IP 地址
             user_agent: 用户代理字符串
+            login_type: 登录方式 (gitee/github/qq/google/wechat/microsoft)
         
         Returns:
             Tuple: (user, access_token, refresh_token, expire_time)
@@ -260,6 +262,11 @@ class BaseOAuthService(ABC):
             user = User.objects.create(**create_kwargs)
             logger.info(f"{cls.PROVIDER_NAME} 用户创建成功: {unique_username}")
         
+        # 更新用户最后登录方式
+        if login_type:
+            user.last_login_type = login_type
+            user.save(update_fields=['last_login_type'])
+        
         # 检查用户状态
         if not user.is_active:
             raise ValueError("账户已被禁用")
@@ -273,12 +280,13 @@ class BaseOAuthService(ABC):
         # 5. 生成 JWT token
         jwt_access_token, jwt_refresh_token, expire_time = AuthService.create_token_response(user)
         
-        # 6. 记录登录会话
+        # 6. 记录登录会话（传递登录方式）
         AuthService.record_login_session(
             user=user,
             username=user.username,
             ip_address=ip_address,
-            user_agent=user_agent
+            user_agent=user_agent,
+            login_type=login_type or cls.PROVIDER_NAME  # 使用传入的 login_type 或默认使用 PROVIDER_NAME
         )
         
         return user, jwt_access_token, jwt_refresh_token, expire_time

@@ -198,7 +198,8 @@ class AuthService:
         user: User,
         username: str,
         ip_address: str,
-        user_agent: str
+        user_agent: str,
+        login_type: str = 'password'
     ) -> None:
         """
         记录登录会话信息
@@ -208,6 +209,7 @@ class AuthService:
             username: 用户名
             ip_address: IP地址
             user_agent: 用户代理字符串
+            login_type: 登录方式 (password/code/qrcode/gitee/github/qq/google/wechat/microsoft)
         """
         try:
             # 提取设备信息
@@ -222,12 +224,14 @@ class AuthService:
                 browser_type=browser_type,
                 os_type=os_type,
                 device_type=device_type,
+                login_type=login_type,  # 传递登录方式
             )
             
-            # 更新用户最后登录时间和IP
+            # 更新用户最后登录时间、IP 和登录方式
             user.last_login = timezone.now()
             user.last_login_ip = ip_address
-            user.save(update_fields=['last_login', 'last_login_ip'])
+            user.last_login_type = login_type
+            user.save(update_fields=['last_login', 'last_login_ip', 'last_login_type'])
         except Exception as e:
             logger.warning(f"记录登录会话失败: {str(e)}")
     

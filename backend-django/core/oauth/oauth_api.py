@@ -80,11 +80,12 @@ def oauth_callback(request: HttpRequest, provider: str, data: OAuthCallbackSchem
         ip_address = request.META.get('REMOTE_ADDR', '')
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         
-        # 处理 OAuth 登录
+        # 处理 OAuth 登录（传递 provider 作为登录方式）
         user, access_token, refresh_token, expire_time = service_class.handle_oauth_login(
             code=data.code,
             ip_address=ip_address,
-            user_agent=user_agent
+            user_agent=user_agent,
+            login_type=provider  # 传递登录方式
         )
         
         # 构造返回数据
