@@ -5,13 +5,13 @@ import os
 
 DATABASE_TYPE = "POSTGRESQL"
 # 数据库地址
-DATABASE_HOST = "hk.fuadmin.cn"
+DATABASE_HOST = ""
 # 数据库端口
 DATABASE_PORT = 5323
 # 数据库用户名
 DATABASE_USER = os.environ.get('DEV_DB_USER', "zq-admin")
 # 数据库密码
-DATABASE_PASSWORD = os.environ.get('DEV_DB_PASSWORD', "MnjKEKdRM3E8cryh")
+DATABASE_PASSWORD = os.environ.get('DEV_DB_PASSWORD', "")
 # 数据库名
 DATABASE_NAME = "zq-admin"
 
