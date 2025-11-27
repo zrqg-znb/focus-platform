@@ -3,24 +3,25 @@
 # 数据库类型 MYSQL/SQLSERVER/SQLITE3/POSTGRESQL
 import os
 
-DATABASE_TYPE = "POSTGRESQL"
-# 数据库地址
-DATABASE_HOST = "django-ninja.zq-platform.cn"
+# 允许通用环境变量覆盖（.env 中的 DATABASE_*）
+DATABASE_TYPE = os.environ.get('DATABASE_TYPE', "MYSQL")
+# 数据库地址（优先 DEV_DB_HOST，其次 DATABASE_HOST，最后默认值）
+DATABASE_HOST = os.environ.get('DEV_DB_HOST', os.environ.get('DATABASE_HOST', "rm-2ze7td37h05fd80qnpo.mysql.rds.aliyuncs.com"))
 # 数据库端口
-DATABASE_PORT = 5323
+DATABASE_PORT = int(os.environ.get('DEV_DB_PORT', os.environ.get('DATABASE_PORT', 3306)))
 # 数据库用户名
-DATABASE_USER = os.environ.get('DEV_DB_USER', "")
+DATABASE_USER = os.environ.get('DEV_DB_USER', os.environ.get('DATABASE_USER', ""))
 # 数据库密码
-DATABASE_PASSWORD = os.environ.get('DEV_DB_PASSWORD', "")
+DATABASE_PASSWORD = os.environ.get('DEV_DB_PASSWORD', os.environ.get('DATABASE_PASSWORD', ""))
 # 数据库名
-DATABASE_NAME = "zq-admin"
+DATABASE_NAME = os.environ.get('DEV_DB_NAME', os.environ.get('DATABASE_NAME', "focus_admin"))
 
 # ================================================= #
 # ******** redis配置  *********** #
 # ================================================= #
-REDIS_PASSWORD = ''
-REDIS_HOST = '127.0.0.1'
-REDIS_DB = '2'
+REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', '')
+REDIS_HOST = os.environ.get('REDIS_HOST', '127.0.0.1')
+REDIS_DB = os.environ.get('REDIS_DB', '2')
 REDIS_URL = f'redis://:{REDIS_PASSWORD or ""}@{REDIS_HOST}:6379'
 
 
@@ -56,43 +57,7 @@ ENABLE_SCHEDULER = False
 GRANT_ADMIN_TO_OAUTH_USER = True
 
 # Gitee OAuth
-GITEE_CLIENT_ID = os.environ.get('GITEE_CLIENT_ID', 'your-gitee-client-id')
-GITEE_CLIENT_SECRET = os.environ.get('GITEE_CLIENT_SECRET', 'your-gitee-client-secret')
+GITEE_CLIENT_ID = os.environ.get('GITEE_CLIENT_ID', '292df743a2f82df6000cc6f5c5271d8a67c2f4fdd03fd9c0b0b34f2727845397')
+GITEE_CLIENT_SECRET = os.environ.get('GITEE_CLIENT_SECRET', '697f5fa9459d837aecdb163756e8ea340e916cc4f3a56ca89f8925df9199d2e9')
 # 注意：前端端口是 5777，回调路径是 /oauth/gitee/callback
 GITEE_REDIRECT_URI = os.environ.get('GITEE_REDIRECT_URI', 'http://localhost:5777/oauth/gitee/callback')
-
-# GitHub OAuth
-GITHUB_CLIENT_ID = os.environ.get('GITHUB_CLIENT_ID', 'your-github-client-id')
-GITHUB_CLIENT_SECRET = os.environ.get('GITHUB_CLIENT_SECRET', 'your-github-client-secret')
-GITHUB_REDIRECT_URI = os.environ.get('GITHUB_REDIRECT_URI', 'http://localhost:5777/oauth/github/callback')
-
-# QQ 互联 OAuth
-QQ_APP_ID = os.environ.get('QQ_APP_ID', 'your-qq-app-id')
-QQ_APP_KEY = os.environ.get('QQ_APP_KEY', 'your-qq-app-key')
-QQ_REDIRECT_URI = os.environ.get('QQ_REDIRECT_URI', 'http://localhost:5777/oauth/qq/callback')
-
-# Google OAuth
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', 'your-google-client-id')
-GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', 'your-google-client-secret')
-GOOGLE_REDIRECT_URI = os.environ.get('GOOGLE_REDIRECT_URI', 'http://localhost:5777/oauth/google/callback')
-
-# 微信开放平台 OAuth
-WECHAT_APP_ID = os.environ.get('WECHAT_APP_ID', 'your-wechat-app-id')
-WECHAT_APP_SECRET = os.environ.get('WECHAT_APP_SECRET', 'your-wechat-app-secret')
-WECHAT_REDIRECT_URI = os.environ.get('WECHAT_REDIRECT_URI', 'http://localhost:5777/oauth/wechat/callback')
-
-# Microsoft OAuth
-MICROSOFT_CLIENT_ID = os.environ.get('MICROSOFT_CLIENT_ID', 'your-microsoft-client-id')
-MICROSOFT_CLIENT_SECRET = os.environ.get('MICROSOFT_CLIENT_SECRET', 'your-microsoft-client-secret')
-MICROSOFT_REDIRECT_URI = os.environ.get('MICROSOFT_REDIRECT_URI', 'http://localhost:5777/oauth/microsoft/callback')
-
-# 钉钉 OAuth
-DINGTALK_APP_ID = os.environ.get('DINGTALK_APP_ID', 'your-dingtalk-app-id')
-DINGTALK_APP_SECRET = os.environ.get('DINGTALK_APP_SECRET', 'your-dingtalk-app-secret')
-DINGTALK_REDIRECT_URI = os.environ.get('DINGTALK_REDIRECT_URI', 'http://localhost:5777/oauth/dingtalk/callback')
-
-# 飞书 OAuth
-FEISHU_APP_ID = os.environ.get('FEISHU_APP_ID', 'your-feishu-app-id')
-FEISHU_APP_SECRET = os.environ.get('FEISHU_APP_SECRET', 'your-feishu-app-secret')
-FEISHU_REDIRECT_URI = os.environ.get('FEISHU_REDIRECT_URI', 'http://localhost:5777/oauth/feishu/callback')
-

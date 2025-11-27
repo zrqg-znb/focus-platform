@@ -1,10 +1,10 @@
-# zq-platform (ZhiQing Development Platform)
+# zq-platform(芷青开发平台)
 
-English | [简体中文](./README.zh-CN.md)
+[English](./README.md) | 简体中文
 
 <div align="center">
 
-A modern enterprise-level admin management system built with Django + Vue3 + Element Plus
+一个现代化的企业级后台管理系统，基于 Django + Vue3 + Element Plus 构建
 
 [![Django](https://img.shields.io/badge/Django-5.2.7-green.svg)](https://www.djangoproject.com/)
 [![Vue](https://img.shields.io/badge/Vue-3.x-brightgreen.svg)](https://vuejs.org/)
@@ -13,152 +13,149 @@ A modern enterprise-level admin management system built with Django + Vue3 + Ele
 
 </div>
 
-## Demo Link
-[https://django-ninja.zq-platform.cn](https://django-ninja.zq-platform.cn/)
+## 📖 项目简介
 
-## 📖 Introduction
+zq-platform 是一个功能完善的企业级后台管理系统解决方案，采用前后端分离架构。后端使用 Django 5.2 + Django Ninja 构建高性能 RESTful API，前端基于 Vue 3 + Vben Admin + Element Plus 打造现代化的管理界面。
 
-zq-platform is a comprehensive enterprise-level admin management system solution with a separated frontend and backend architecture. The backend uses Django 5.2 + Django Ninja to build high-performance RESTful APIs, while the frontend is based on Vue 3 + Vben Admin + Element Plus to create a modern management interface.
+### ✨ 核心特性
 
-### ✨ Core Features
+- 🎯 **完整的 RBAC 权限系统** - 用户、角色、权限、部门、岗位多维度权限控制
+- 🔐 **JWT 认证机制** - 安全的 Token 认证，支持 Access Token 和 Refresh Token
+- 📊 **系统监控** - 服务器监控、Redis 监控、数据库监控，实时掌握系统状态
+- 📁 **文件管理** - 完善的文件上传、下载、预览功能
+- 📝 **操作日志** - 详细的登录日志和操作审计
+- 🗂️ **数据字典** - 灵活的字典管理，支持多级分类
+- ⏰ **任务调度** - 基于 APScheduler 的定时任务管理
+- 🔌 **WebSocket 支持** - 实时通信能力
+- 🌐 **多数据库支持** - MySQL、PostgreSQL、SQL Server、SQLite
+- 🎨 **现代化 UI** - 响应式设计，支持暗黑模式
+- 📦 **Monorepo 架构** - 基于 pnpm workspace 的前端工程化方案
 
-- 🎯 **Complete RBAC Permission System** - Multi-dimensional permission control for users, roles, permissions, departments, and positions
-- 🔐 **JWT Authentication** - Secure token authentication with Access Token and Refresh Token support
-- 📊 **System Monitoring** - Server monitoring, Redis monitoring, database monitoring for real-time system status
-- 📁 **File Management** - Comprehensive file upload, download, and preview functionality
-- 📝 **Operation Logs** - Detailed login logs and operation auditing
-- 🗂️ **Data Dictionary** - Flexible dictionary management with multi-level classification support
-- ⏰ **Task Scheduling** - APScheduler-based scheduled task management
-- 🔌 **WebSocket Support** - Real-time communication capabilities
-- 🌐 **Multi-Database Support** - MySQL, PostgreSQL, SQL Server, SQLite
-- 🎨 **Modern UI** - Responsive design with dark mode support
-- 📦 **Monorepo Architecture** - Frontend engineering solution based on pnpm workspace
+## 🏗️ 技术栈
 
-## 🏗️ Tech Stack
+### 后端技术
 
-### Backend Technologies
-
-- **Core Framework**: Django 5.2.7
-- **API Framework**: Django Ninja 1.4.5 (High-performance API framework)
-- **Authentication**: PyJWT 2.8.0
-- **Async Tasks**: Celery 5.4.0 + Django Celery Beat
-- **Task Scheduling**: APScheduler 3.10.4
-- **Caching**: Redis + django-redis
+- **核心框架**: Django 5.2.7
+- **API 框架**: Django Ninja 1.4.5 (高性能 API 框架)
+- **认证**: PyJWT 2.8.0
+- **异步任务**: Celery 5.4.0 + Django Celery Beat
+- **任务调度**: APScheduler 3.10.4
+- **缓存**: Redis + django-redis
 - **WebSocket**: Django Channels 4.2
-- **Database Drivers**: psycopg2-binary, pymysql, pyodbc
-- **Server**: Uvicorn 0.38.0 / Gunicorn 23.0.0
-- **Others**: openpyxl, geoip2, psutil, cryptography
+- **数据库驱动**: psycopg2-binary, pymysql, pyodbc
+- **服务器**: Uvicorn 0.38.0 / Gunicorn 23.0.0
+- **其他**: openpyxl, geoip2, psutil, cryptography
 
-### Frontend Technologies
+### 前端技术
 
-- **Core Framework**: Vue 3.x
-- **Build Tool**: Vite 5.x
-- **UI Component Library**: Element Plus
-- **State Management**: Pinia
-- **Router**: Vue Router
-- **HTTP Client**: Axios
-- **Utility Libraries**: VueUse, dayjs, lodash-es
-- **Code Standards**: ESLint, Prettier, Stylelint
-- **Package Manager**: pnpm 10.14.0
+- **核心框架**: Vue 3.x
+- **构建工具**: Vite 5.x
+- **UI 组件库**: Element Plus
+- **状态管理**: Pinia
+- **路由**: Vue Router
+- **HTTP 客户端**: Axios
+- **工具库**: VueUse, dayjs, lodash-es
+- **代码规范**: ESLint, Prettier, Stylelint
+- **包管理**: pnpm 10.14.0
 - **Monorepo**: Turbo
 
-## 📁 Project Structure
+## 📁 项目结构
 
 ```
 zq-platform/
-├── backend-django/          # Django Backend
-│   ├── application/         # Project Configuration
-│   ├── core/               # Core Business Modules
-│   │   ├── auth/           # Authentication & Authorization
-│   │   ├── user/           # User Management
-│   │   ├── role/           # Role Management
-│   │   ├── permission/     # Permission Management
-│   │   ├── dept/           # Department Management
-│   │   ├── post/           # Position Management
-│   │   ├── menu/           # Menu Management
-│   │   ├── dict/           # Dictionary Management
-│   │   ├── login_log/      # Login Logs
-│   │   ├── file_manager/   # File Management
-│   │   ├── server_monitor/ # Server Monitoring
-│   │   ├── redis_monitor/  # Redis Monitoring
-│   │   ├── redis_manager/  # Redis Management
-│   │   ├── database_monitor/ # Database Monitoring
-│   │   └── database_manager/ # Database Management
-│   ├── scheduler/          # Task Scheduling Module
-│   ├── common/             # Common Modules
-│   ├── env/                # Environment Configuration
-│   ├── requirements.txt    # Python Dependencies
-│   └── manage.py          # Django Management Script
+├── backend-django/          # Django 后端
+│   ├── application/         # 项目配置
+│   ├── core/               # 核心业务模块
+│   │   ├── auth/           # 认证授权
+│   │   ├── user/           # 用户管理
+│   │   ├── role/           # 角色管理
+│   │   ├── permission/     # 权限管理
+│   │   ├── dept/           # 部门管理
+│   │   ├── post/           # 岗位管理
+│   │   ├── menu/           # 菜单管理
+│   │   ├── dict/           # 字典管理
+│   │   ├── login_log/      # 登录日志
+│   │   ├── file_manager/   # 文件管理
+│   │   ├── server_monitor/ # 服务器监控
+│   │   ├── redis_monitor/  # Redis 监控
+│   │   ├── redis_manager/  # Redis 管理
+│   │   ├── database_monitor/ # 数据库监控
+│   │   └── database_manager/ # 数据库管理
+│   ├── scheduler/          # 任务调度模块
+│   ├── common/             # 公共模块
+│   ├── env/                # 环境配置
+│   ├── requirements.txt    # Python 依赖
+│   └── manage.py          # Django 管理脚本
 │
-└── web/                    # Vue Frontend (Monorepo)
+└── web/                    # Vue 前端 (Monorepo)
     ├── apps/
-    │   └── web-ele/        # Element Plus Main Application
+    │   └── web-ele/        # Element Plus 版本主应用
     │       ├── src/
-    │       │   ├── api/    # API Interfaces
-    │       │   ├── views/  # Page Components
-    │       │   ├── router/ # Router Configuration
-    │       │   └── store/  # State Management
+    │       │   ├── api/    # API 接口
+    │       │   ├── views/  # 页面组件
+    │       │   ├── router/ # 路由配置
+    │       │   └── store/  # 状态管理
     │       └── package.json
-    ├── packages/           # Shared Packages
-    │   ├── @core/          # Core Packages
-    │   ├── effects/        # Effects Packages
+    ├── packages/           # 共享包
+    │   ├── @core/          # 核心包
+    │   ├── effects/        # 副作用包
     │   ├── hooks/          # Hooks
-    │   ├── icons/          # Icons
-    │   ├── locales/        # Internationalization
-    │   ├── stores/         # State Management
-    │   └── utils/          # Utility Functions
-    ├── internal/           # Internal Tools
-    └── package.json        # Root Configuration
+    │   ├── icons/          # 图标
+    │   ├── locales/        # 国际化
+    │   ├── stores/         # 状态管理
+    │   └── utils/          # 工具函数
+    ├── internal/           # 内部工具
+    └── package.json        # 根配置
 ```
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-### Requirements
+### 环境要求
 
-- **Backend**
+- **后端**
   - Python >= 3.10
   - MySQL >= 5.7 / PostgreSQL >= 12 / SQL Server / SQLite
   - Redis >= 5.0
 
-- **Frontend**
+- **前端**
   - Node.js >= 20.10.0
   - pnpm >= 9.12.0
 
-### Backend Installation
+### 后端安装
 
-1. **Clone the Project**
+1. **克隆项目**
 ```bash
 git clone https://github.com/jiangzhikj/zq-platform.git
 cd zq-platform/backend-django
 ```
 
-2. **Create Virtual Environment**
+2. **创建虚拟环境**
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# or
+# 或
 venv\Scripts\activate     # Windows
 ```
 
-3. **Install Dependencies**
+3. **安装依赖**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Configure Environment Variables**
+4. **配置环境变量**
 ```bash
 cp env
-# Edit the .env file to configure database, Redis, JWT keys, etc.
+# 编辑 .env 文件，配置数据库、Redis、JWT 密钥等
 ```
 
-Main configuration items:
+主要配置项：
 ```env
 
-# JWT Keys
+# JWT 密钥
 JWT_ACCESS_SECRET_KEY=your-jwt-access-secret
 JWT_REFRESH_SECRET_KEY=your-jwt-refresh-secret
 
-# Database Configuration
+# 数据库配置
 DATABASE_TYPE=MYSQL  # MYSQL/POSTGRESQL/SQLSERVER/SQLITE3
 DATABASE_HOST=127.0.0.1
 DATABASE_PORT=3306
@@ -166,168 +163,168 @@ DATABASE_USER=root
 DATABASE_PASSWORD=password
 DATABASE_NAME=zq_admin
 
-# Redis Configuration
+# Redis 配置
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 REDIS_PASSWORD=
 REDIS_DB=2
 ```
 
-5. **Database Migration**
+5. **数据库迁移**
 ```bash
 python manage.py makemigrations core scheduler
 python manage.py migrate
 ```
 
-6. **Initialize Data**
+6. **初始化数据**
 ```bash
 python manage.py loaddata db_init.json
 ```
 
-7. **Start Service**
+7. **启动服务**
 ```bash
-# Development Environment
+# 开发环境
 python manage.py runserver 0.0.0.0:8000
 
 ```
 
-8. **Start Task Scheduler (Optional)**
+8. **启动任务调度器（可选）**
 ```bash
-# Production Environment
+# 生产环境
 python start_scheduler.py
 ```
 
-### Frontend Installation
+### 前端安装
 
-1. **Navigate to Frontend Directory**
+1. **进入前端目录**
 ```bash
 cd zq-platform/web
 ```
 
-2. **Install Dependencies**
+2. **安装依赖**
 ```bash
 pnpm install
 ```
 
-3. **Configure Environment Variables**
+3. **配置环境变量**
 ```bash
 cd apps/web-ele
 cp .env.development .env
-# Edit the .env file to configure backend API address
+# 编辑 .env 文件，配置后端 API 地址
 ```
 
-4. **Start Development Server**
+4. **启动开发服务器**
 ```bash
-# In web root directory
+# 在 web 根目录下
 pnpm dev
 ```
 
-5. **Build for Production**
+5. **构建生产版本**
 ```bash
 pnpm build:ele
 ```
 
-## 📝 Default Account
+## 📝 默认账号
 
-After initializing data, you can login with the following account:
+初始化数据后，可使用以下账号登录：
 
-- Username: `superadmin`
-- Password: `123456` or contact administrator
+- 账号: `superadmin`
+- 密码: 请查看 `123456` 或联系管理员
 
-## 🔧 Main Functional Modules
+## 🔧 主要功能模块
 
-### System Management
-- **User Management**: CRUD operations for users, password reset, status management
-- **Role Management**: Role permission assignment, data permission control
-- **Permission Management**: Fine-grained API and button permission control
-- **Department Management**: Tree-structured department management
-- **Position Management**: Position information maintenance
-- **Menu Management**: Dynamic menu configuration, route management
-- **Dictionary Management**: System dictionary maintenance
+### 系统管理
+- **用户管理**: 用户的增删改查、密码重置、状态管理
+- **角色管理**: 角色权限分配、数据权限控制
+- **权限管理**: 接口权限、按钮权限细粒度控制
+- **部门管理**: 树形部门结构管理
+- **岗位管理**: 岗位信息维护
+- **菜单管理**: 动态菜单配置、路由管理
+- **字典管理**: 系统字典维护
 
-### System Monitoring
-- **Server Monitoring**: Real-time monitoring of CPU, memory, disk, network
-- **Redis Monitoring**: Redis performance metrics, key-value management
-- **Database Monitoring**: Database connection, performance monitoring
-- **Login Logs**: User login records, IP geolocation
+### 系统监控
+- **服务器监控**: CPU、内存、磁盘、网络实时监控
+- **Redis 监控**: Redis 性能指标、键值管理
+- **数据库监控**: 数据库连接、性能监控
+- **登录日志**: 用户登录记录、IP 地理位置
 
-### Task Scheduling
-- **Scheduled Tasks**: Cron expression configuration
-- **Task Logs**: Execution history, result viewing
-- **Task Management**: Start, stop, execute immediately
+### 任务调度
+- **定时任务**: Cron 表达式配置
+- **任务日志**: 执行历史、结果查看
+- **任务管理**: 启动、停止、立即执行
 
-### File Management
-- **File Upload**: Multi-file upload support
-- **File Preview**: Online preview for images and documents
-- **File Download**: Batch download functionality
+### 文件管理
+- **文件上传**: 支持多文件上传
+- **文件预览**: 图片、文档在线预览
+- **文件下载**: 批量下载功能
 
-## 🔐 API Documentation
+## 🔐 API 文档
 
-After starting the backend, visit the following URLs to view API documentation:
+后端启动后，访问以下地址查看 API 文档：
 
 - Swagger UI: `http://localhost:8000/api/docs`
 - ReDoc: `http://localhost:8000/api/redoc`
 
-## 🛠️ Development Guide
+## 🛠️ 开发指南
 
-### Backend Development
+### 后端开发
 
-1. **Adding New Modules**
-   - Create in `core/` or create a new app
-   - Define models, schemas, services, api
-   - Register routes in router
+1. **添加新模块**
+   - 在 `core/` 或创建新 app
+   - 定义 models、schemas、services、api
+   - 在 router 中注册路由
 
-2. **API Development Standards**
-   - Use Django Ninja decorators
-   - Unified return format
-   - Exception handling
-   - Permission verification
+2. **API 开发规范**
+   - 使用 Django Ninja 装饰器
+   - 统一返回格式
+   - 异常处理
+   - 权限验证
 
-### Frontend Development
+### 前端开发
 
-1. **Adding New Pages**
-   - Create page components in `src/views/`
-   - Add routes in `src/router/routes/modules/`
-   - Add API definitions in `src/api/`
+1. **添加新页面**
+   - 在 `src/views/` 创建页面组件
+   - 在 `src/router/routes/modules/` 添加路由
+   - 在 `src/api/` 添加接口定义
 
-2. **Component Development Standards**
-   - Use Element Plus components
-   - Prefer Tailwind CSS
-   - Support dark mode
-   - Import icons from `@vben/icons`
+2. **组件开发规范**
+   - 使用 Element Plus 组件
+   - 优先使用 Tailwind CSS
+   - 支持暗黑模式
+   - 图标从 `@vben/icons` 导入
 
-## 📦 Deployment
-1. **Backend Deployment**
-   - Use Gunicorn + Nginx
-   - Configure Supervisor process daemon
-   - Configure SSL certificates
+## 📦 部署
+1. **后端部署**
+   - 使用 Gunicorn + Nginx
+   - 配置 Supervisor 进程守护
+   - 配置 SSL 证书
 
-2. **Frontend Deployment**
-   - Execute `pnpm build` to build
-   - Deploy `dist` directory to Nginx
-   - Configure reverse proxy
+2. **前端部署**
+   - 执行 `pnpm build` 构建
+   - 将 `dist` 目录部署到 Nginx
+   - 配置反向代理
 
-## 🤝 Contributing
+## 🤝 贡献指南
 
-Issues and Pull Requests are welcome!
+欢迎提交 Issue 和 Pull Request！
 
-1. Fork this project
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork 本项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
 
 
-## 🙏 Acknowledgments
+## 🙏 致谢
 
-- [Django](https://www.djangoproject.com/) - Powerful Python web framework
-- [Django Ninja](https://django-ninja.rest-framework.com/) - Fast Django REST framework
-- [Vue Vben Admin](https://github.com/vbenjs/vue-vben-admin) - Excellent Vue3 admin template
-- [Element Plus](https://element-plus.org/) - Vue 3 component library
+- [Django](https://www.djangoproject.com/) - 强大的 Python Web 框架
+- [Django Ninja](https://django-ninja.rest-framework.com/) - 快速的 Django REST 框架
+- [Vue Vben Admin](https://github.com/vbenjs/vue-vben-admin) - 优秀的 Vue3 后台管理模板
+- [Element Plus](https://element-plus.org/) - 基于 Vue 3 的组件库
 
-## 📞 Contact
+## 📞 联系方式
 
-For questions or suggestions, please contact us via:
+如有问题或建议，请通过以下方式联系：
 
 - Issue: [GitHub Issues](../../issues)
 - Email: jiangzhikj@outlook.com
