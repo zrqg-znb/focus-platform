@@ -26,7 +26,7 @@
     "batchDelete": "Batch Delete",
     "resetPassword": "Reset Password",
     "resetPasswordTitle": "Reset Password",
-    "resetPasswordConfirm": "Are you sure you want to reset the password for {0}?",
+    "resetPasswordConfirm": "Are you sure you want to reset the password for {0}?\nThe password will be reset to: 123456",
     "resetPasswordSuccess": "Successfully reset the password for {0}",
     "resetPasswordError": "Failed to reset password",
     "cannotDeleteAdmin": "Cannot delete administrator account",

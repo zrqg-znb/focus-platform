@@ -89,7 +89,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout(redirect: boolean = true) {
     try {
-      await logoutApi();
+      // 只有在已登录（持有accessToken）时才调用后端退出接口，避免无效请求
+      if (accessStore.accessToken) {
+        await logoutApi();
+      }
     } catch {
       // 不做任何处理
     }

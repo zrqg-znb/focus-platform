@@ -34,7 +34,17 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     console.warn('Access token or refresh token is invalid or expired. ');
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
+
+    // 在重置前记录一次是否已登录（是否持有token）
+    const hadToken = Boolean(accessStore.accessToken) || Boolean(accessStore.refreshToken);
+
     accessStore.setAccessToken(null);
+
+    // 如果此前没有token（例如登录接口401），则不触发登出，避免无意义的 /logout 请求
+    if (!hadToken) {
+      return;
+    }
+
     if (
       preferences.app.loginExpiredMode === 'modal' &&
       accessStore.isAccessChecked

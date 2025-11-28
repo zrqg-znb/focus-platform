@@ -157,9 +157,9 @@ export async function deleteUserApi(userId: string) {
  * 批量删除用户
  */
 export async function batchDeleteUserApi(data: UserBatchDeleteInput) {
-  return requestClient.post<{ count: number }>(
-    '/api/core/user/batch_delete',
-    data,
+  return requestClient.delete<{ count: number }>(
+    '/api/core/user/batch/delete',
+    { data },
   );
 }
 
@@ -170,21 +170,23 @@ export async function batchUpdateUserStatusApi(
   data: UserBatchUpdateStatusInput,
 ) {
   return requestClient.post<{ count: number }>(
-    '/api/core/user/batch_update_status',
+    '/api/core/user/batch/update-status',
     data,
   );
 }
 
 /**
- * 重置用户密码
+ * 重置用户密码（管理员操作，后端固定为默认密码）
+ * 注意：后端路由为 PUT /api/core/user/reset/password/{user_id}
+ * 不需要请求体，这里忽略传入的数据以兼容现有调用
  */
 export async function resetUserPasswordApi(
   userId: string,
-  data: UserPasswordResetInput,
+  _data?: UserPasswordResetInput,
 ) {
-  return requestClient.post<User>(
-    `/api/core/user/${userId}/reset_password`,
-    data,
+  return requestClient.put<User>(
+    `/api/core/user/reset/password/${userId}`,
+    {},
   );
 }
 
@@ -230,7 +232,8 @@ export async function getCurrentUserProfileApi() {
  * 部分更新用户个人信息
  */
 export async function patchUserProfileApi(data: UserProfileUpdateInput) {
-  return requestClient.patch<User>('/api/core/user/profile', data);
+  // 使用 PUT 以兼容请求客户端不支持 PATCH 的情况；后端已提供 PUT 路由
+  return requestClient.put<User>('/api/core/user/profile', data);
 }
 
 /**
