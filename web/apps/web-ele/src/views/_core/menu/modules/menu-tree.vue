@@ -114,12 +114,12 @@ function transformMenuTreeData(menus: any[]): MenuTreeNode[] {
         maxNumOfOpenTab: menu.maxNumOfOpenTab,
       },
     };
-    
+
     // 递归处理子菜单
     if (menu.children && menu.children.length > 0) {
       transformed.children = transformMenuTreeData(menu.children);
     }
-    
+
     return transformed;
   });
 }
@@ -198,21 +198,21 @@ async function onDeleteMenu(menu: MenuTreeNode) {
       try {
         await deleteMenuApi(menu.id);
         ElMessage.success($t('ui.actionMessage.deleteSuccess', [menu.name]));
-        
+
         // 如果删除的是当前选中的菜单，清除选中状态
         if (selectedMenuId.value === menu.id) {
           selectedMenuId.value = undefined;
           emit('select', undefined);
         }
-        
+
         // 保存当前展开的节点ID
         const currentExpandedIds = new Set(expandedMenuIds.value);
         // 从展开列表中移除被删除的菜单
         currentExpandedIds.delete(menu.id);
-        
+
         // 重新加载整个菜单树
         await fetchMenuList();
-        
+
         // 恢复展开状态
         expandedMenuIds.value = currentExpandedIds;
       } catch {
@@ -230,20 +230,20 @@ async function onDeleteMenu(menu: MenuTreeNode) {
 async function onMenuFormSuccess(menuData?: any) {
   // 保存当前展开的节点ID
   const currentExpandedIds = new Set(expandedMenuIds.value);
-  
+
   // 重新加载整个菜单树
   await fetchMenuList();
-  
+
   // 恢复展开状态
   expandedMenuIds.value = currentExpandedIds;
-  
+
   if (menuData?.id) {
     // 自动选中新创建的菜单，并进入编辑模式
     const newMenu = await findMenuById(menuData.id);
     if (newMenu) {
       selectedMenuId.value = newMenu.id;
       emit('select', newMenu, true); // 传递 autoEdit = true
-      
+
       // 自动展开新菜单的父节点
       if (menuData.parent_id) {
         expandedMenuIds.value.add(menuData.parent_id);
@@ -275,7 +275,7 @@ function autoExpandSearchResults(nodes: MenuTreeNode[]) {
 /**
  * 防抖搜索定时器
  */
-let searchTimer: ReturnType<typeof setTimeout> | null = null;
+let searchTimer: null | ReturnType<typeof setTimeout> = null;
 
 /**
  * 监听搜索文本变化，执行后端搜索
@@ -326,10 +326,7 @@ const filteredTreeData = computed(() => {
 /**
  * 渲染树形列表
  */
-const renderTreeList = (
-  nodes: MenuTreeNode[],
-  level: number = 0,
-): any[] => {
+const renderTreeList = (nodes: MenuTreeNode[], level: number = 0): any[] => {
   return nodes.flatMap((node) => [
     { node, level, isNode: true },
     ...(expandedMenuIds.value.has(node.id) &&
@@ -348,10 +345,10 @@ const flattenedTree = computed(() => renderTreeList(filteredTreeData.value));
 async function refreshTree() {
   // 保存当前展开的节点ID
   const currentExpandedIds = new Set(expandedMenuIds.value);
-  
+
   // 重新加载整个菜单树
   await fetchMenuList();
-  
+
   // 恢复展开状态
   expandedMenuIds.value = currentExpandedIds;
 }
@@ -388,7 +385,7 @@ function updateNodeInTree(
       // 保留 children 和 hasChild，更新其他属性
       const children = nodes[i].children;
       const hasChild = nodes[i].hasChild;
-      
+
       // 将扁平化的 Menu 数据转换为带 meta 的结构
       nodes[i] = {
         ...updatedData,
@@ -419,10 +416,12 @@ function updateNodeInTree(
       } as MenuTreeNode;
       return true;
     }
-    if (nodes[i].children && nodes[i].children!.length > 0) {
-      if (updateNodeInTree(nodes[i].children!, menuId, updatedData)) {
-        return true;
-      }
+    if (
+      nodes[i].children &&
+      nodes[i].children!.length > 0 &&
+      updateNodeInTree(nodes[i].children!, menuId, updatedData)
+    ) {
+      return true;
     }
   }
   return false;
@@ -476,7 +475,7 @@ onMounted(() => {
     <MenuFormModalComponent @success="onMenuFormSuccess" />
 
     <!-- 搜索和添加区域 -->
-    <div class="mb-4 flex gap-2 flex-shrink-0">
+    <div class="mb-4 flex flex-shrink-0 gap-2">
       <ElInput
         v-model="searchKeyword"
         :placeholder="$t('common.search')"
@@ -487,15 +486,11 @@ onMounted(() => {
     </div>
 
     <!-- 菜单树列表 -->
-    <div class="flex-1 min-h-0 overflow-hidden">
+    <div class="min-h-0 flex-1 overflow-hidden">
       <ElSkeleton :loading="loading || isSearching" animated :count="8">
         <template #template>
           <div class="space-y-1">
-            <div
-              v-for="i in 8"
-              :key="i"
-              class="menu-skeleton-item"
-            >
+            <div v-for="i in 8" :key="i" class="menu-skeleton-item">
               <ElSkeletonItem
                 variant="text"
                 style="width: 100%; height: 40px"
@@ -507,88 +502,101 @@ onMounted(() => {
           <div style="height: 100%">
             <ElScrollbar style="height: 100%">
               <div class="space-y-1 pr-2">
-        <div
-          v-for="(item, index) in flattenedTree"
-          :key="`${item.node.id}-${index}`"
-          class="flex h-[42px] cursor-pointer items-center justify-between rounded-[8px] px-3 transition-colors"
-          :class="[
-            selectedMenuId === item.node.id
-              ? 'bg-primary/15 dark:bg-accent text-primary'
-              : 'hover:bg-[var(--el-fill-color-light)]',
-          ]"
-          :style="{ paddingLeft: `calc(12px + ${item.level * 20}px)` }"
-          @mouseenter="hoveredMenuId = item.node.id"
-          @mouseleave="hoveredMenuId = undefined"
-          @click="onMenuSelect(item.node)"
-        >
-          <!-- 菜单名称和展开/折叠按钮 -->
-          <div class="flex min-w-0 flex-1 items-center gap-1.5">
-            <!-- 展开/折叠按钮 -->
-            <div
-              v-if="hasChildren(item.node)"
-              class="hover:text-primary flex w-4 flex-shrink-0 cursor-pointer items-center justify-center"
-              @click.stop="toggleNodeExpanded(item.node)"
-            >
-              <IconifyIcon
-                icon="ep:caret-right"
-                class="size-4 transform transition-transform"
-                :class="expandedMenuIds.has(item.node.id) ? 'rotate-90' : ''"
-              />
-            </div>
-            <div v-else class="w-4 flex-shrink-0"></div>
+                <div
+                  v-for="(item, index) in flattenedTree"
+                  :key="`${item.node.id}-${index}`"
+                  class="flex h-[42px] cursor-pointer items-center justify-between rounded-[8px] px-3 transition-colors"
+                  :class="[
+                    selectedMenuId === item.node.id
+                      ? 'bg-primary/15 dark:bg-accent text-primary'
+                      : 'hover:bg-[var(--el-fill-color-light)]',
+                  ]"
+                  :style="{ paddingLeft: `calc(12px + ${item.level * 20}px)` }"
+                  @mouseenter="hoveredMenuId = item.node.id"
+                  @mouseleave="hoveredMenuId = undefined"
+                  @click="onMenuSelect(item.node)"
+                >
+                  <!-- 菜单名称和展开/折叠按钮 -->
+                  <div class="flex min-w-0 flex-1 items-center gap-1.5">
+                    <!-- 展开/折叠按钮 -->
+                    <div
+                      v-if="hasChildren(item.node)"
+                      class="hover:text-primary flex w-4 flex-shrink-0 cursor-pointer items-center justify-center"
+                      @click.stop="toggleNodeExpanded(item.node)"
+                    >
+                      <IconifyIcon
+                        icon="ep:caret-right"
+                        class="size-4 transform transition-transform"
+                        :class="
+                          expandedMenuIds.has(item.node.id) ? 'rotate-90' : ''
+                        "
+                      />
+                    </div>
+                    <div v-else class="w-4 flex-shrink-0"></div>
 
-            <!-- 菜单图标 -->
-            <div class="size-4 flex-shrink-0 text-primary">
-              <IconifyIcon
-                :icon="item.node.meta?.icon || 'carbon:circle-dash'"
-                class="size-full"
-              />
-            </div>
+                    <!-- 菜单图标 -->
+                    <div class="text-primary size-4 flex-shrink-0">
+                      <IconifyIcon
+                        :icon="item.node.meta?.icon || 'carbon:circle-dash'"
+                        class="size-full"
+                      />
+                    </div>
 
-            <!-- 菜单名称 -->
-            <div
-              class="truncate text-sm"
-              :title="item.node.meta?.title ? $t(item.node.meta.title) : item.node.name"
-            >
-              {{ item.node.meta?.title ? $t(item.node.meta.title) : item.node.name }}
-            </div>
-          </div>
+                    <!-- 菜单名称 -->
+                    <div
+                      class="truncate text-sm"
+                      :title="
+                        item.node.meta?.title
+                          ? $t(item.node.meta.title)
+                          : item.node.name
+                      "
+                    >
+                      {{
+                        item.node.meta?.title
+                          ? $t(item.node.meta.title)
+                          : item.node.name
+                      }}
+                    </div>
+                  </div>
 
-          <!-- 操作图标 -->
-          <div
-            v-if="hoveredMenuId === item.node.id"
-            class="ml-2 flex flex-shrink-0 gap-0.5"
-            @click.stop
-          >
-            <ElTooltip :content="$t('menu.addChildMenu')" placement="top">
-              <ElButton
-                type="primary"
-                text
-                size="small"
-                circle
-                @click="onAddChildMenu(item.node)"
-              >
-                <IconifyIcon icon="ep:plus" class="size-4" />
-              </ElButton>
-            </ElTooltip>
-            <ElTooltip :content="$t('menu.deleteMenu')" placement="top">
-              <ElButton
-                type="danger"
-                text
-                size="small"
-                circle
-                style="margin-left: 0"
-                :title="$t('common.delete')"
-                @click="onDeleteMenu(item.node)"
-              >
-                <IconifyIcon icon="ep:delete" class="size-4" />
-              </ElButton>
-            </ElTooltip>
-          </div>
-        </div>
+                  <!-- 操作图标 -->
+                  <div
+                    v-if="hoveredMenuId === item.node.id"
+                    class="ml-2 flex flex-shrink-0 gap-0.5"
+                    @click.stop
+                  >
+                    <ElTooltip
+                      :content="$t('menu.addChildMenu')"
+                      placement="top"
+                    >
+                      <ElButton
+                        type="primary"
+                        text
+                        size="small"
+                        circle
+                        @click="onAddChildMenu(item.node)"
+                      >
+                        <IconifyIcon icon="ep:plus" class="size-4" />
+                      </ElButton>
+                    </ElTooltip>
+                    <ElTooltip :content="$t('menu.deleteMenu')" placement="top">
+                      <ElButton
+                        type="danger"
+                        text
+                        size="small"
+                        circle
+                        style="margin-left: 0"
+                        :title="$t('common.delete')"
+                        @click="onDeleteMenu(item.node)"
+                      >
+                        <IconifyIcon icon="ep:delete" class="size-4" />
+                      </ElButton>
+                    </ElTooltip>
+                  </div>
+                </div>
               </div>
             </ElScrollbar>
-      </div>
+          </div>
         </template>
       </ElSkeleton>
     </div>
@@ -615,4 +623,3 @@ onMounted(() => {
   box-sizing: border-box;
 }
 </style>
-

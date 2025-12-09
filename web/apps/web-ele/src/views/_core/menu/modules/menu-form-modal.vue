@@ -1,24 +1,25 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import type { Recordable } from '@vben/types';
+
+import type { VbenFormSchema } from '#/adapter/form';
+import type { Menu } from '#/api/core/menu';
+
+import { computed, h, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
-import { h } from 'vue';
+import { getPopupContainer } from '@vben/utils';
 
-import { useVbenForm } from '#/adapter/form';
-import type { VbenFormSchema } from '#/adapter/form';
-import { z } from '#/adapter/form';
-import type { Menu } from '#/api/core/menu';
+import { ElMessage } from 'element-plus';
+
+import { useVbenForm, z } from '#/adapter/form';
 import {
-  createMenuApi,
-  getAllMenuTreeApi,
   checkMenuNameApi,
   checkMenuPathApi,
+  createMenuApi,
+  getAllMenuTreeApi,
 } from '#/api/core/menu';
-import { ElMessage } from 'element-plus';
-import type { Recordable } from '@vben/types';
-import { IconifyIcon } from '@vben/icons';
-import { getPopupContainer } from '@vben/utils';
 
 const emit = defineEmits<{
   success: [menuData?: any];
@@ -136,10 +137,7 @@ const schema = computed((): VbenFormSchema[] => [
           return !(await isMenuPathExists(value));
         },
         (value) => ({
-          message: $t('ui.formRules.alreadyExists', [
-            $t('menu.path'),
-            value,
-          ]),
+          message: $t('ui.formRules.alreadyExists', [$t('menu.path'), value]),
         }),
       ),
   },
@@ -179,15 +177,15 @@ async function onSubmit() {
         parent_id: data.parent_id,
         order: 0,
       };
-      
+
       // 创建菜单并获取返回的数据
       const result = await createMenuApi(menuData);
       ElMessage.success($t('ui.actionMessage.createSuccess'));
       modalApi.close();
-      
+
       // 传递新创建的菜单数据（包括 id 和 parent_id）
       emit('success', result);
-    } catch (error) {
+    } catch {
       ElMessage.error($t('ui.actionMessage.createError'));
     } finally {
       modalApi.unlock();

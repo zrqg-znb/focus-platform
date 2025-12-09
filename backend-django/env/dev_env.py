@@ -47,7 +47,7 @@ JWT_REFRESH_SECRET_KEY = os.environ.get(
 # ================================================= #
 IS_DEMO = False
 
-ENABLE_SCHEDULER = False
+ENABLE_SCHEDULER = True
 
 # ================================================= #
 # ******** OAuth 配置 *********** #

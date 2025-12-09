@@ -31,7 +31,9 @@ const [Form, formApi] = useVbenForm({
 
 function resetForm() {
   formApi.resetForm();
-  formApi.setValues(formData.value || {});
+  if (formData.value) {
+    setFormValuesWithConversion(formData.value);
+  }
 }
 
 /**
@@ -41,12 +43,63 @@ function handleTriggerTypeChange(value: string) {
   triggerType.value = value as 'cron' | 'interval' | 'date';
 }
 
+/**
+ * 设置表单值，并进行单位转换
+ */
+function setFormValuesWithConversion(data: SchedulerJob) {
+  const formValues = { ...data };
+  
+  // 处理间隔时间的单位转换
+  if (data.trigger_type === 'interval' && data.interval_seconds) {
+    const seconds = data.interval_seconds;
+    if (seconds % 86400 === 0) {
+      formValues.interval_unit = 'days';
+      formValues.interval_seconds = seconds / 86400;
+    } else if (seconds % 3600 === 0) {
+      formValues.interval_unit = 'hours';
+      formValues.interval_seconds = seconds / 3600;
+    } else if (seconds % 60 === 0) {
+      formValues.interval_unit = 'minutes';
+      formValues.interval_seconds = seconds / 60;
+    } else {
+      formValues.interval_unit = 'seconds';
+      formValues.interval_seconds = seconds;
+    }
+  } else {
+    // 默认单位
+    formValues.interval_unit = 'seconds';
+  }
+  
+  formApi.setValues(formValues);
+}
+
 const [Modal, modalApi] = useVbenModal({
   async onConfirm() {
     const { valid } = await formApi.validate();
     if (valid) {
       modalApi.lock();
       const data = await formApi.getValues();
+      
+      // 处理间隔时间的单位转换（转换为秒）
+      if (data.trigger_type === 'interval' && data.interval_seconds) {
+        const unit = data.interval_unit || 'seconds';
+        const value = data.interval_seconds;
+        
+        let seconds = value;
+        if (unit === 'minutes') {
+          seconds = value * 60;
+        } else if (unit === 'hours') {
+          seconds = value * 3600;
+        } else if (unit === 'days') {
+          seconds = value * 86400;
+        }
+        
+        data.interval_seconds = seconds;
+      }
+      
+      // 移除临时字段
+      delete data.interval_unit;
+      
       try {
         await (formData.value?.id
           ? updateSchedulerJobApi(formData.value.id, data as any)
@@ -64,11 +117,12 @@ const [Modal, modalApi] = useVbenModal({
       if (data) {
         formData.value = data;
         triggerType.value = data.trigger_type;
-        formApi.setValues(formData.value);
+        setFormValuesWithConversion(data);
       } else {
         formData.value = undefined;
         triggerType.value = 'cron';
         formApi.resetForm();
+        formApi.setValues({ interval_unit: 'seconds' });
       }
     }
   },

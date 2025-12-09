@@ -6,6 +6,7 @@ Scheduler Service - APScheduler 调度服务
 """
 import json
 import logging
+import inspect  # 添加 inspect 模块
 from datetime import datetime
 from typing import Optional, Dict, Any
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -153,16 +154,23 @@ class SchedulerService:
             args = json.loads(job_obj.task_args) if job_obj.task_args else []
             kwargs = json.loads(job_obj.task_kwargs) if job_obj.task_kwargs else {}
             
-            # ✅ 关键修复：添加 job_code 到 kwargs 中
-            # 这样任务执行器可以通过 kwargs.get('job_code') 获取任务编码
-            kwargs['job_code'] = job_obj.code
-            
             # 导入任务函数
             task_func = self._import_task_func(job_obj.task_func)
             if not task_func:
                 logger.error(f"无法导入任务函数: {job_obj.task_func}")
                 return False
             
+            # 智能注入 job_code 参数
+            # 检查函数签名，如果函数接受 job_code 参数或接受 **kwargs，则注入
+            try:
+                sig = inspect.signature(task_func)
+                params = sig.parameters
+                if 'job_code' in params or any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
+                    kwargs['job_code'] = job_obj.code
+            except Exception as e:
+                # 如果检查签名失败，为了保险起见，不注入参数，避免调用失败
+                logger.warning(f"检查任务函数签名失败 {job_obj.code}: {str(e)}")
+
             # 添加任务
             self._scheduler.add_job(
                 func=task_func,
@@ -340,8 +348,13 @@ class SchedulerService:
             job = self._scheduler.get_job(job_obj.code)
             if job and job.next_run_time:
                 from scheduler.models import SchedulerJob
+                # 处理时区问题：如果 USE_TZ=False，需要将时间转换为 naive datetime
+                next_run_time = job.next_run_time
+                if not settings.USE_TZ and next_run_time and next_run_time.tzinfo:
+                    next_run_time = next_run_time.replace(tzinfo=None)
+                
                 SchedulerJob.objects.filter(id=job_obj.id).update(
-                    next_run_time=job.next_run_time
+                    next_run_time=next_run_time
                 )
         except Exception as e:
             logger.error(f"更新下次执行时间失败: {str(e)}")
@@ -372,6 +385,9 @@ class SchedulerService:
                     'last_run_status',
                     'last_run_result',
                     'last_run_time',
+                    'total_run_count',
+                    'success_count',
+                    'failure_count'
                 ])
                 
                 # 更新下次执行时间
