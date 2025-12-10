@@ -362,25 +362,71 @@ class SchedulerService:
     def _job_executed_listener(self, event: JobExecutionEvent):
         """任务执行事件监听器"""
         try:
-            from scheduler.models import SchedulerJob
-            
+            from scheduler.models import SchedulerJob, SchedulerLog
+            from django.utils import timezone
+            import traceback
+
             job_code = event.job_id
             
             # 更新任务统计信息
             job_obj = SchedulerJob.objects.filter(code=job_code).first()
             if job_obj:
+                # 准备日志数据
+                log_data = {
+                    'job': job_obj,
+                    'job_name': job_obj.name,
+                    'job_code': job_obj.code,
+                    'start_time': event.scheduled_run_time,
+                    'end_time': timezone.now(),
+                    'hostname': 'localhost',  # 简单实现
+                }
+
+                # 处理时区问题
+                if not settings.USE_TZ:
+                    if log_data['start_time'] and log_data['start_time'].tzinfo:
+                        log_data['start_time'] = log_data['start_time'].replace(tzinfo=None)
+                    if log_data['end_time'] and log_data['end_time'].tzinfo:
+                        log_data['end_time'] = log_data['end_time'].replace(tzinfo=None)
+
                 if event.exception:
                     # 执行失败
                     job_obj.last_run_status = 'failed'
                     job_obj.last_run_result = str(event.exception)
                     job_obj.increment_run_count(success=False)
+                    
+                    log_data['status'] = 'failed'
+                    log_data['exception'] = str(event.exception)
+                    log_data['traceback'] = event.traceback
+                    log_data['result'] = None
                 else:
                     # 执行成功
                     job_obj.last_run_status = 'success'
                     job_obj.last_run_result = str(event.retval) if event.retval else None
                     job_obj.increment_run_count(success=True)
+                    
+                    log_data['status'] = 'success'
+                    log_data['exception'] = None
+                    log_data['traceback'] = None
+                    log_data['result'] = str(event.retval) if event.retval else "Success"
                 
-                job_obj.last_run_time = datetime.now()
+                # 计算耗时
+                if log_data['start_time'] and log_data['end_time']:
+                    # 确保两者都是 offset-aware 或 offset-naive
+                    start_dt = log_data['start_time']
+                    end_dt = log_data['end_time']
+                    
+                    if start_dt.tzinfo and not end_dt.tzinfo:
+                         end_dt = end_dt.replace(tzinfo=start_dt.tzinfo)
+                    elif not start_dt.tzinfo and end_dt.tzinfo:
+                         start_dt = start_dt.replace(tzinfo=end_dt.tzinfo)
+                         
+                    duration = (end_dt - start_dt).total_seconds()
+                    log_data['duration'] = max(0, duration) # 避免负数
+                
+                # 创建日志
+                SchedulerLog.objects.create(**log_data)
+
+                job_obj.last_run_time = timezone.now()
                 job_obj.save(update_fields=[
                     'last_run_status',
                     'last_run_result',

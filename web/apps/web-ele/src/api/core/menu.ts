@@ -103,9 +103,10 @@ export interface MenuStats {
 /**
  * 获取用户所有菜单（路由树）
  */
-export async function getAllMenusApi() {
+export async function getAllMenusApi(useCache: boolean = false) {
   return requestClient.get<RouteRecordStringComponent[]>(
     '/api/core/menu/route/tree',
+    { params: { use_cache: useCache } },
   );
 }
 

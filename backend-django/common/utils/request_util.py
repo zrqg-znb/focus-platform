@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from django.urls.resolvers import ResolverMatch
 from user_agents import parse
+from common.fu_auth import get_user_by_token
 
 def get_request_ip(request):
     """
@@ -156,6 +157,21 @@ def get_verbose_name(queryset=None, view=None, model=None):
     except Exception as e:
         pass
     return model if model else ""
+
+
+def get_request_user(request):
+    """
+    获取请求中的用户对象
+    优先使用认证中间件设置的 request.auth，其次尝试从 Authorization 头解析
+    返回 core.user.User 实例或包含 id/username 的字典
+    """
+    user = getattr(request, 'auth', None)
+    if user:
+        return user
+    user = get_user_by_token(request)
+    if user:
+        return user
+    return None
 
 
 def get_ip_analysis(ip):

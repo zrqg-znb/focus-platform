@@ -141,6 +141,52 @@ def delete_batch_user(request, data: UserSchemaBatchDeleteIn):
     return UserSchemaBatchDeleteOut(count=success_count, failed_ids=failed_ids)
 
 
+@router.put("/user/profile/me", response=UserSchemaOut, summary="更新个人信息（完全替换）")
+def update_profile(request, data: UserProfileUpdateIn):
+    """
+    用户更新自己的个人信息（PUT - 完全替换）
+    
+    改进点：
+    - 只能修改自己的个人信息
+    - 有限的字段可以修改
+    """
+    current_user = request.auth
+    user = get_object_or_404(User, id=current_user.id)
+    
+    # 更新个人信息
+    for attr, value in data.dict(exclude_none=True).items():
+        setattr(user, attr, value)
+    
+    user.save()
+    return user
+
+
+@router.patch("/user/profile/me", response=UserSchemaOut, summary="部分更新个人信息")
+def patch_profile(request, data: UserProfileUpdateIn):
+    """
+    用户部分更新自己的个人信息（PATCH - 只更新提供的字段）
+    
+    优势：
+    - 只需提供需要修改的字段
+    - 更灵活，适合前端表单部分更新
+    
+    改进点：
+    - 只能修改自己的个人信息
+    - 有限的字段可以修改
+    """
+    current_user = request.auth
+    user = get_object_or_404(User, id=current_user.id)
+    
+    # 只更新提供的字段
+    update_data = data.dict(exclude_unset=True)
+    
+    for attr, value in update_data.items():
+        setattr(user, attr, value)
+    
+    user.save()
+    return user
+
+
 @router.put("/user/{user_id}", response=UserSchemaOut, summary="更新用户（完全替换）")
 def update_user(request, user_id: str, data: UserSchemaIn):
     """
@@ -415,52 +461,6 @@ def search_user(request, keyword: str = Query(None)):
     
     query_set = query_set.select_related('dept', 'manager').prefetch_related('post', 'core_roles')
     return query_set
-
-
-@router.put("/user/profile", response=UserSchemaOut, summary="更新个人信息（完全替换）")
-def update_profile(request, data: UserProfileUpdateIn):
-    """
-    用户更新自己的个人信息（PUT - 完全替换）
-    
-    改进点：
-    - 只能修改自己的个人信息
-    - 有限的字段可以修改
-    """
-    current_user = request.auth
-    user = get_object_or_404(User, id=current_user.id)
-    
-    # 更新个人信息
-    for attr, value in data.dict(exclude_none=True).items():
-        setattr(user, attr, value)
-    
-    user.save()
-    return user
-
-
-@router.patch("/user/profile", response=UserSchemaOut, summary="部分更新个人信息")
-def patch_profile(request, data: UserProfileUpdateIn):
-    """
-    用户部分更新自己的个人信息（PATCH - 只更新提供的字段）
-    
-    优势：
-    - 只需提供需要修改的字段
-    - 更灵活，适合前端表单部分更新
-    
-    改进点：
-    - 只能修改自己的个人信息
-    - 有限的字段可以修改
-    """
-    current_user = request.auth
-    user = get_object_or_404(User, id=current_user.id)
-    
-    # 只更新提供的字段
-    update_data = data.dict(exclude_unset=True)
-    
-    for attr, value in update_data.items():
-        setattr(user, attr, value)
-    
-    user.save()
-    return user
 
 
 @router.get("/user/profile/me", response=UserSchemaDetail, summary="获取当前用户信息")

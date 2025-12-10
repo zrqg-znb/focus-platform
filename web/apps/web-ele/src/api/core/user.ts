@@ -194,7 +194,7 @@ export async function resetUserPasswordApi(
  * 更新用户个人信息
  */
 export async function updateUserProfileApi(data: UserProfileUpdateInput) {
-  return requestClient.put<User>('/api/core/user/profile', data);
+  return requestClient.put<User>('/api/core/user/profile/me', data);
 }
 
 /**
@@ -233,7 +233,7 @@ export async function getCurrentUserProfileApi() {
  */
 export async function patchUserProfileApi(data: UserProfileUpdateInput) {
   // 使用 PUT 以兼容请求客户端不支持 PATCH 的情况；后端已提供 PUT 路由
-  return requestClient.put<User>('/api/core/user/profile', data);
+  return requestClient.put<User>('/api/core/user/profile/me', data);
 }
 
 /**

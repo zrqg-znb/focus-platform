@@ -16,6 +16,7 @@ from core.menu.menu_api import router as menu_router
 from core.dict.dict_api import router as dict_router
 from core.dict_item.dict_item_api import router as dict_item_router
 from core.login_log.login_log_api import router as login_log_router
+from core.operation_log.operation_log_api import router as operation_log_router
 from core.server_monitor.server_monitor_api import router as server_monitor_router
 from core.redis_monitor.redis_monitor_api import router as redis_monitor_router
 from core.redis_manager.redis_manager_api import router as redis_manager_router
@@ -39,6 +40,7 @@ core_router.add_router("", menu_router, tags=["Core-Menu"])
 core_router.add_router("", dict_router, tags=["Core-Dict"])
 core_router.add_router("", dict_item_router, tags=["Core-DictItem"])
 core_router.add_router("", login_log_router, tags=["Core-LoginLog"])
+core_router.add_router("", operation_log_router, tags=["Core-OperationLog"])
 core_router.add_router("", server_monitor_router, tags=["Core-ServerMonitor"])
 core_router.add_router("", redis_monitor_router, tags=["Core-RedisMonitor"])
 core_router.add_router("", redis_manager_router, tags=["Core-RedisManager"])
@@ -46,4 +48,3 @@ core_router.add_router("", database_monitor_router, tags=["Core-DatabaseMonitor"
 core_router.add_router("", database_manager_router, tags=["Core-DatabaseManager"])
 core_router.add_router("", file_manager_router, tags=["Core-FileManager"])
 core_router.add_router("/oauth", oauth_router, tags=["Core-OAuth"])
-

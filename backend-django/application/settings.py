@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',  # WebSocket支持
+    'channels',
     'core',
     'scheduler',
 ]
@@ -48,8 +48,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'common.middleware.SecurityHeadersMiddleware',  # 新增安全头中间件
-    # 'common.middleware.ApiLoggingMiddleware',
+    'common.middleware.SecurityHeadersMiddleware',
+    'common.middleware.ApiLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'application.urls'
@@ -297,9 +297,9 @@ API_WHITE_LIST = [
     # '/api/syscoretem/server_monitor/*',  # 服务器监控
 ]
 
-API_LOG_ENABLE = False
-ENABLE_LOGIN_ANALYSIS_LOG = False
-API_LOG_METHODS = ['POST', 'GET', 'DELETE', 'PUT']
+API_LOG_ENABLE = True
+ENABLE_LOGIN_ANALYSIS_LOG = True
+API_LOG_METHODS = 'ALL'
 API_MODEL_MAP = {}
 
 # Default primary key field type

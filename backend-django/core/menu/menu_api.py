@@ -223,7 +223,7 @@ def patch_menu(request, menu_id: str, data: MenuSchemaPatch):
 
 
 @router.get("/menu/get/tree", response=List[dict], summary="获取菜单树（有缓存）")
-def list_menu_tree(request):
+def list_menu_tree(request, use_cache: bool = Query(True)):
     """
     获取菜单树形结构
     
@@ -233,7 +233,7 @@ def list_menu_tree(request):
     - 使用统一的缓存管理器
     """
     # 尝试从缓存获取
-    cached_tree = MenuCacheManager.get_menu_tree()
+    cached_tree = MenuCacheManager.get_menu_tree() if use_cache else None
     if cached_tree is not None:
         logger.debug("从缓存返回菜单树")
         return cached_tree
@@ -250,15 +250,16 @@ def list_menu_tree(request):
     # 转换为树形结构
     menu_tree = list_to_route_v5(menu_list)
     
-    # 缓存结果
-    MenuCacheManager.set_menu_tree(menu_tree)
+    # 缓存结果（仅在开启缓存时）
+    if use_cache:
+        MenuCacheManager.set_menu_tree(menu_tree)
     logger.debug(f"菜单树已缓存（共 {len(menu_list)} 个菜单）")
     
     return menu_tree
 
 
 @router.get("/menu/route/tree", response=List[dict], summary="获取用户路由树（有缓存）")
-def route_menu_tree(request):
+def route_menu_tree(request, use_cache: bool = Query(True)):
     """
     获取当前用户的路由树
     
@@ -283,7 +284,7 @@ def route_menu_tree(request):
         raise HttpError(401, "认证信息无效")
     
     # 尝试从缓存获取用户菜单路由
-    cached_route = MenuCacheManager.get_user_menu_route(str(user.id))
+    cached_route = MenuCacheManager.get_user_menu_route(str(user.id)) if use_cache else None
     if cached_route is not None:
         logger.debug(f"从缓存返回用户路由菜单: {user.username}")
         return cached_route
@@ -299,9 +300,10 @@ def route_menu_tree(request):
     
     menu_tree = list_to_route_v5(list(queryset))
     
-    # 缓存用户的路由菜单
-    MenuCacheManager.set_user_menu_route(str(user.id), menu_tree)
-    logger.debug(f"用户路由菜单已缓存: {user.username}")
+    # 缓存用户的路由菜单（仅在开启缓存时）
+    if use_cache:
+        MenuCacheManager.set_user_menu_route(str(user.id), menu_tree)
+        logger.debug(f"用户路由菜单已缓存: {user.username}")
     
     return menu_tree
 
@@ -583,6 +585,5 @@ def move_menu(request, menu_id: str, new_parent_id: str = None):
     remove_menu_cache()
     
     return response_success("移动成功")
-
 
 
