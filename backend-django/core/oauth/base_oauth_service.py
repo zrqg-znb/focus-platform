@@ -10,6 +10,7 @@ from django.db import transaction
 from django.conf import settings
 
 from core.user.user_model import User
+from core.role.role_model import Role
 from core.auth.auth_service import AuthService
 from common.fu_crud import get_or_none
 
@@ -261,6 +262,15 @@ class BaseOAuthService(ABC):
             }
             user = User.objects.create(**create_kwargs)
             logger.info(f"{cls.PROVIDER_NAME} 用户创建成功: {unique_username}")
+        
+        # 确保用户至少有一个角色（如果没有角色，无法获取菜单）
+        if not user.core_roles.exists():
+            default_role = Role.objects.filter(name='默认').first()
+            if default_role:
+                user.core_roles.add(default_role)
+                logger.info(f"为用户 {user.username} 分配默认角色")
+            else:
+                logger.warning(f"系统未配置'默认'角色，用户 {user.username} 可能无法访问受限资源")
         
         # 更新用户最后登录方式
         if login_type:

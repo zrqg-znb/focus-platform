@@ -434,10 +434,22 @@ def resume_scheduler(request):
 def get_scheduler_status(request):
     """获取调度器状态"""
     is_running = scheduler_service.is_running()
+    is_paused = scheduler_service.is_paused()
+    state = scheduler_service.get_state()
+    
+    # 转换状态为易读字符串
+    status_str = "stopped"
+    if state == 1:  # STATE_RUNNING
+        status_str = "running"
+    elif state == 2:  # STATE_PAUSED
+        status_str = "paused"
+        
     jobs = scheduler_service.get_all_jobs() if is_running else []
     
     return {
         "is_running": is_running,
+        "is_paused": is_paused,
+        "status": status_str,
         "job_count": len(jobs),
         "jobs": jobs,
     }

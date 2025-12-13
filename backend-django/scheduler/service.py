@@ -19,6 +19,7 @@ from apscheduler.events import (
     EVENT_JOB_MISSED,
     JobExecutionEvent,
 )
+from apscheduler.schedulers.base import STATE_RUNNING, STATE_PAUSED, STATE_STOPPED
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -121,6 +122,16 @@ class SchedulerService:
     def is_running(self) -> bool:
         """判断调度器是否运行中"""
         return self._scheduler and self._scheduler.running
+    
+    def is_paused(self) -> bool:
+        """判断调度器是否暂停"""
+        return self._scheduler and self._scheduler.state == STATE_PAUSED
+
+    def get_state(self) -> int:
+        """获取调度器状态"""
+        if not self._scheduler:
+            return STATE_STOPPED
+        return self._scheduler.state
     
     def load_jobs_from_db(self):
         """从数据库加载所有启用的任务"""

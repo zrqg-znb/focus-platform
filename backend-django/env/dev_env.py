@@ -54,7 +54,7 @@ ENABLE_SCHEDULER = True
 # ================================================= #
 
 # 是否给OAuth登陆用户授予管理员权限（生产环境最好不要这样做）
-GRANT_ADMIN_TO_OAUTH_USER = True
+GRANT_ADMIN_TO_OAUTH_USER = False
 
 # Gitee OAuth
 GITEE_CLIENT_ID = os.environ.get('GITEE_CLIENT_ID', '292df743a2f82df6000cc6f5c5271d8a67c2f4fdd03fd9c0b0b34f2727845397')
