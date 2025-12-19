@@ -136,6 +136,7 @@ const navigationAccordion = defineModel<boolean>('navigationAccordion');
 
 const footerEnable = defineModel<boolean>('footerEnable');
 const footerFixed = defineModel<boolean>('footerFixed');
+const footerSettingShow = defineModel<boolean>('footerSettingShow');
 
 const copyrightSettingShow = defineModel<boolean>('copyrightSettingShow');
 const copyrightEnable = defineModel<boolean>('copyrightEnable');

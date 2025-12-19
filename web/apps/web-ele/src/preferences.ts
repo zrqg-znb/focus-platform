@@ -24,4 +24,16 @@ export const overridesPreferences = defineOverridesPreferences({
     fit: 'contain',
     source: Logo,
   },
+  copyright: {
+    enable: true,
+    companyName: 'Vben Admin',
+    companySiteLink: 'https://www.vben.pro',
+    date: '2025',
+    icp: 'ICP备88888888号',
+    icpLink: '',
+    settingShow: false,
+  },
+  footer: {
+    settingShow: false,
+  },
 });
