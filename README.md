@@ -3,14 +3,7 @@
 [English](./README.md) | 简体中文
 
 <div align="center">
-
 一个现代化的企业级后台管理系统，基于 Django + Vue3 + Element Plus 构建
-
-[![Django](https://img.shields.io/badge/Django-5.2.7-green.svg)](https://www.djangoproject.com/)
-[![Vue](https://img.shields.io/badge/Vue-3.x-brightgreen.svg)](https://vuejs.org/)
-[![Element Plus](https://img.shields.io/badge/Element%20Plus-latest-blue.svg)](https://element-plus.org/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-
 </div>
 
 ## 📖 项目简介
@@ -322,14 +315,6 @@ pnpm build:ele
 - [Vue Vben Admin](https://github.com/vbenjs/vue-vben-admin) - 优秀的 Vue3 后台管理模板
 - [Element Plus](https://element-plus.org/) - 基于 Vue 3 的组件库
 
-## 📞 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- Issue: [GitHub Issues](../../issues)
-- Email: jiangzhikj@outlook.com
-
----
 
 <div align="center">
   Made with ❤️ by ZQ Team
