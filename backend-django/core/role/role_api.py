@@ -561,8 +561,8 @@ def update_role_menus_permissions(request, role_id: str, data: RoleMenuPermissio
     from core.permission.permission_model import Permission
     
     role = get_object_or_404(Role, id=role_id)
-    menu_ids = data.menu_ids
-    permission_ids = data.permission_ids
+    menu_ids = set(data.menu_ids)
+    permission_ids = set(data.permission_ids)
     
     # 验证菜单是否存在
     valid_menus = Menu.objects.filter(id__in=menu_ids)
@@ -573,16 +573,55 @@ def update_role_menus_permissions(request, role_id: str, data: RoleMenuPermissio
     valid_permissions = Permission.objects.filter(id__in=permission_ids)
     if len(valid_permissions) != len(permission_ids):
         raise HttpError(400, "存在无效的权限ID")
+
+    # 1. 更新菜单
+    # 前端发送的是全量的选中菜单列表，所以直接使用 set 覆盖
+    if valid_menus is not None:
+        role.menu.set(valid_menus)
+
+    # 2. 更新权限 (合并逻辑)
+    # 确定更新范围：如果有 scope_menu_ids 则使用它，否则回退到推断逻辑
+    if data.scope_menu_ids is not None:
+        scope_menu_ids = set(data.scope_menu_ids)
+    else:
+        # 回退逻辑：假设提交的权限覆盖了其所属的菜单
+        # 注意：这无法处理"删除某菜单下所有权限"的情况
+        scope_menu_ids = set(
+            valid_permissions.values_list('menu_id', flat=True)
+        )
     
-    # 更新菜单和权限关联
-    role.menu.set(valid_menus)
-    role.permission.set(valid_permissions)
+    # 获取角色原有的权限
+    current_permissions = role.permission.all()
+    
+    # 保留那些【不属于】本次更新范围的菜单的权限
+    permissions_to_keep = []
+    for perm in current_permissions:
+        if str(perm.menu_id) not in [str(id) for id in scope_menu_ids]:
+            permissions_to_keep.append(perm)
+            
+    # 新的权限集合 = 保留的权限 + 本次提交的权限
+    # 注意：这里只包含 valid_permissions，即 scope_menu_ids 范围内未选中的权限会被移除
+    final_permissions = list(permissions_to_keep) + list(valid_permissions)
+    
+    # 更新角色权限关联
+    role.permission.set(final_permissions)
+
+    # 3. 清理孤儿权限（可选）
+    # 如果某些权限所属的菜单已经不再属于该角色，是否应该移除这些权限？
+    # 为了保持数据一致性，建议移除
+    # current_menu_ids = set(role.menu.values_list('id', flat=True))
+    # final_permissions_cleaned = [
+    #     p for p in role.permission.all() 
+    #     if p.menu_id in current_menu_ids
+    # ]
+    # if len(final_permissions_cleaned) != role.permission.count():
+    #     role.permission.set(final_permissions_cleaned)
     
     # 清除角色权限缓存
     from common.fu_cache import PermissionCacheManager
     PermissionCacheManager.invalidate_role_permissions(str(role_id))
     
-    return response_success(f"成功更新 {len(menu_ids)} 个菜单和 {len(permission_ids)} 个权限")
+    return response_success(f"成功更新菜单和权限")
 
 
 @router.get("/role/{role_id}/menus", response=RoleMenuListOut, summary="获取角色菜单列表")

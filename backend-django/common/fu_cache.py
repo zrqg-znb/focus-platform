@@ -519,13 +519,16 @@ class MenuCacheManager:
     @staticmethod
     def get_user_menus(user_id: str):
         """获取缓存的用户可访问菜单"""
-        cache_key = f"{CacheKeyPrefix.USER_MENUS}:{user_id}"
+        # 使用版本控制，确保权限变更时缓存失效
+        version_key = PermissionCacheManager.get_cache_version_key(user_id)
+        cache_key = f"{CacheKeyPrefix.USER_MENUS}:{user_id}:{version_key}"
         return CacheManager.get(cache_key)
     
     @staticmethod
     def set_user_menus(user_id: str, menus):
         """缓存用户可访问的菜单"""
-        cache_key = f"{CacheKeyPrefix.USER_MENUS}:{user_id}"
+        version_key = PermissionCacheManager.get_cache_version_key(user_id)
+        cache_key = f"{CacheKeyPrefix.USER_MENUS}:{user_id}:{version_key}"
         # 用户菜单缓存时间较短（权限可能变更）
         CacheManager.set(cache_key, menus, CacheStrategy.PERMISSION_CACHE)
         logger.debug(f"用户菜单已缓存: {user_id} ({len(menus)} 个)")
@@ -533,13 +536,16 @@ class MenuCacheManager:
     @staticmethod
     def get_user_menu_route(user_id: str):
         """获取缓存的用户菜单路由"""
-        cache_key = f"{CacheKeyPrefix.MENU}:route:{user_id}"
+        # 使用版本控制，确保权限变更时缓存失效
+        version_key = PermissionCacheManager.get_cache_version_key(user_id)
+        cache_key = f"{CacheKeyPrefix.MENU}:route:{user_id}:{version_key}"
         return CacheManager.get(cache_key)
     
     @staticmethod
     def set_user_menu_route(user_id: str, route):
         """缓存用户菜单路由"""
-        cache_key = f"{CacheKeyPrefix.MENU}:route:{user_id}"
+        version_key = PermissionCacheManager.get_cache_version_key(user_id)
+        cache_key = f"{CacheKeyPrefix.MENU}:route:{user_id}:{version_key}"
         CacheManager.set(cache_key, route, CacheStrategy.PERMISSION_CACHE)
         logger.debug(f"用户菜单路由已缓存: {user_id}")
     

@@ -273,6 +273,7 @@ class RoleMenuPermissionUpdateIn(Schema):
     """更新角色菜单和权限输入"""
     menu_ids: List[str]
     permission_ids: List[str]
+    scope_menu_ids: Optional[List[str]] = None
 
 
 class MenuItemOut(Schema):

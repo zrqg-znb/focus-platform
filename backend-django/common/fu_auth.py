@@ -309,8 +309,35 @@ class BearerAuth(HttpBearer):
                 is_active=True,
             ).exists()
 
+            # 如果没有精确匹配，尝试匹配动态路径（例如包含 {db_index} 的路径）
+            if not has_permission:
+                # 获取该用户所有包含变量的权限路径
+                candidate_perms = Permission.objects.filter(
+                    roles__id__in=role_ids,
+                    http_method__in=[method_code, 5],
+                    is_active=True,
+                    api_path__contains='{'  # 只查询包含变量的路径
+                ).values_list('api_path', flat=True)
+
+                for perm_path in candidate_perms:
+                    try:
+                        # 将路径转换为正则: 
+                        # 1. re.escape 转义特殊字符 (例如 { 变为 \{ )
+                        # 2. 将 \{variable\} 替换为 ([^/]+) 以匹配路径段
+                        pattern = re.escape(perm_path)
+                        pattern = re.sub(r'\\\{[^}]+\\\}', r'[^/]+', pattern)
+                        
+                        # 3. 匹配原始路径 (path) 而不是 normalized_path
+                        if re.match(f"^{pattern}$", path):
+                            has_permission = True
+                            logger.debug(f"动态路径匹配成功: {perm_path} matches {path}")
+                            break
+                    except Exception:
+                        continue
+
             # 缓存结果（5分钟）
-            cache.set(cache_key, has_permission, 300)
+            from common.fu_cache import CacheStrategy
+            cache.set(cache_key, has_permission, CacheStrategy.PERMISSION_CACHE)
             
             if has_permission:
                 logger.debug(f"用户 {user.username} 有权限访问: {method} {normalized_path}")

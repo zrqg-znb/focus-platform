@@ -425,9 +425,14 @@ async function saveSelection() {
     console.log('保存 - 选中的菜单:', menuIds);
     console.log('保存 - 选中的权限:', permissionIds);
     
+    // 获取已加载权限的菜单ID列表作为更新范围
+    const scopeMenuIds = Object.keys(menuPermissionsCache.value);
+    console.log('保存 - 权限更新范围:', scopeMenuIds);
+
     await updateRoleMenusPermissionsApi(props.role.id, {
       menu_ids: menuIds,
       permission_ids: permissionIds,
+      scope_menu_ids: scopeMenuIds,
     });
     
     ElMessage.success($t('role.permissions.saveSuccess'));
